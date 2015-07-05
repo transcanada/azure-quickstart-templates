@@ -193,7 +193,7 @@
 			"metadata": {
 				"description": "The location of resources such as templates and DSC modules that the script is dependent"
 			},
-			"defaultValue": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/active-directory-new-domain"
+			"defaultValue": "https://raw.githubusercontent.com/transcanada/azure-quickstart-templates/master/teamcity-service"
 		},
 		"DatabaseServerName": {
 			"type": "string",
@@ -629,7 +629,7 @@
                 "type": "DSC",
                 "typeHandlerVersion": "1.9",
                 "settings": {
-                    "ModulesUrl": "[concat(parameters('assetLocation'),'/DomainJoin.zip')]",
+                    "ModulesUrl": "[concat(parameters('AssetLocation'),'/DomainJoin.zip')]",
                     "ConfigurationFunction": "DomainJoin.ps1\\DomainJoin",
                     "Properties": {
                         "DomainName": "[parameters('domainName')]",

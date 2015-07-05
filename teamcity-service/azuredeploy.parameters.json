@@ -37,9 +37,6 @@
 		},				
 		"RDPPort": {
 			"value": 3389
-		},
-		"AssetLocation": {
-			"value": "https://raw.githubusercontent.com/transcanada/azure-quickstart-templates/master/active-directory-new-domain"
 		}
 	}
 }
