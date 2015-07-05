@@ -1,5 +1,5 @@
 
-$testNum=44
+$testNum=52
 $testName="dotest$($testNum)"
 	
 $location = 'West US'
