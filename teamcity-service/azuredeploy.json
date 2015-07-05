@@ -615,38 +615,40 @@
 						}
 					]
 				}
-			}
-		},
- /*       {
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(parameters('TeamCityServerVMName'),'/domainjoin')]",
-            "apiVersion": "2015-05-01-preview",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', parameters('TeamCityServerVMName'))]"
-            ],
-            "properties": {
-                "publisher": "Microsoft.Powershell",
-                "type": "DSC",
-                "typeHandlerVersion": "1.9",
-                "settings": {
-                    "ModulesUrl": "[concat(parameters('AssetLocation'),'/DomainJoin.zip')]",
-                    "ConfigurationFunction": "DomainJoin.ps1\\DomainJoin",
-                    "Properties": {
-                        "DomainName": "[parameters('domainName')]",
-                        "AdminCreds": {
-                            "UserName": "[parameters('adminUsername')]",
-                            "Password": "PrivateSettingsRef:adminPassword"
-                        }
-                    }
-                },
-                "protectedSettings": {
-                    "Items": {
-                        "adminPassword": "[parameters('adminPassword')]"
-                    }
-                }
-            }
-        },	*/	
+			},
+			"resources": [
+				{
+		            "type": "Microsoft.Compute/virtualMachines/extensions",
+		            "name": "[concat(parameters('TeamCityServerVMName'),'/InitializeServer')]",
+		            "apiVersion": "2015-05-01-preview",
+		            "location": "[parameters('location')]",
+		            "dependsOn": [
+		                "[resourceId('Microsoft.Compute/virtualMachines', parameters('TeamCityServerVMName'))]"
+		            ],
+		            "properties": {
+		                "publisher": "Microsoft.Powershell",
+		                "type": "DSC",
+		                "typeHandlerVersion": "1.9",
+		                "settings": {
+		                    "ModulesUrl": "[concat(parameters('AssetLocation'),'/InitializeServer.zip')]",
+		                    "ConfigurationFunction": "InitializeServer.ps1\\InitializeServer",
+		                    "Properties": {
+		                        "DomainName": "[parameters('domainName')]",
+		                        "AdminCreds": {
+		                            "UserName": "[parameters('adminUsername')]",
+		                            "Password": "PrivateSettingsRef:adminPassword"
+		                        }
+		                    }
+		                },
+		                "protectedSettings": {
+		                    "Items": {
+		                        "adminPassword": "[parameters('adminPassword')]"
+		                    }
+		                }
+		            }
+		        }
+			]
+		},		
 		{
 			"name": "UpdateVNetDNS",
 			"type": "Microsoft.Resources/deployments",
