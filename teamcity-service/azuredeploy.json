@@ -541,8 +541,9 @@
 	        "name": "[variables('TeamCityNicName')]",
 	        "location": "[parameters('location')]",
 	        "dependsOn": [
-	            "[concat('Microsoft.Network/publicIPAddresses/', variables('TeamCityPublicIPAddressName'))]",
-	            "Microsoft.Resources/deployments/VNet"
+	            "[concat('Microsoft.Network/publicIPAddresses/', variables('TeamCityPublicIPAddressName'))]",	            			
+				"[resourceId('Microsoft.Network/networkInterfaces',parameters('adNicName'))]",
+				"Microsoft.Resources/deployments/UpdateVNetDNS"
 	        ],
 	        "properties": {
 	            "ipConfigurations": [
@@ -616,9 +617,9 @@
 				}
 			}
 		},
-        {
+ /*       {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(parameters('TeamCityServerVMName'),'DomainJoin')]",
+            "name": "[concat(parameters('TeamCityServerVMName'),'/domainjoin')]",
             "apiVersion": "2015-05-01-preview",
             "location": "[parameters('location')]",
             "dependsOn": [
@@ -645,7 +646,7 @@
                     }
                 }
             }
-        },		
+        },	*/	
 		{
 			"name": "UpdateVNetDNS",
 			"type": "Microsoft.Resources/deployments",
@@ -729,4 +730,4 @@
 	      ]
 	    }
 	]
-}
+}.
