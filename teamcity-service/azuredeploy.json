@@ -146,12 +146,12 @@
                 "description": "The GUID corresponding to the performance level for edition."
             }
         },
-        "TeamCityServerVMName": {
-            "type": "string",
-            "defaultValue": "TCServerVM",
+        "TeamCityServiceName": {
+            "type": "string",            
             "metadata": {
-                "description": "Name for the VM hosting TeamCityServer"
-            }
+                "description": "Name for the TeamCity Service"
+            },
+			"defaultValue": "TmCty"
         },
         "TeamCityServerVMSize": {
 			"type": "string",
@@ -178,6 +178,32 @@
 			},
 			"defaultValue": "Standard_D2"
         },				
+        "TeamCityAgentVMSize": {
+			"type": "string",
+			"allowedValues": [
+				"Standard_D1",
+				"Standard_DS1",
+				"Standard_D2",
+				"Standard_DS2",
+				"Standard_D3",
+				"Standard_DS3",
+				"Standard_D4",
+				"Standard_DS4",
+				"Standard_D11",
+				"Standard_DS11",
+				"Standard_D12",
+				"Standard_DS12",
+				"Standard_D13",
+				"Standard_DS13",
+				"Standard_D14",
+				"Standard_DS14"
+			],
+			"metadata": {
+				"description": "The size of the VM for TeamCity Agents"
+			},
+			"defaultValue": "Standard_D1"
+        },				
+		
 		"TeamCityDNSNameForPublicIP": {
 			"type": "string",
 			"metadata": {
@@ -188,12 +214,17 @@
 	"variables": {		
 		"VnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
 		"subnetRangeRef": "[concat(variables('VnetID'),'/subnets/',parameters('subnetName'))]",				
-		"vnetTemplateUri": "[concat(parameters('AssetLocation'),'/vnet.json')]",				
+		"vnetTemplateUri": "[concat(parameters('AssetLocation'),'/vnet.json')]",
+		"TeamCityServerVMName": "[concat(parameters('TeamCityServiceName'),'SrvVM')]",				
 		"TeamCityServerDisk": "tcsDataDisk",
 		"TeamCityServerDiskSize": 300,
 		"TeamCityPublicIPAddressName": "tcsPublicIP",
 		"TeamCityIPAddressType": "Dynamic",
-		"TeamCityNicName": "tcsNic"
+		"TeamCityNicName": "tcsNic",
+		"TeamCityAgentVMName": "[concat(parameters('TeamCityServiceName'),'Agnt1VM')]",	
+		"TeamCityAgentDisk": "tca1DataDisk",
+		"TeamCityAgentDiskSize": 60,
+		"TeamCityAgentNicName": "tca1Nic"
 	},
 	"resources": [
 		{
@@ -275,7 +306,7 @@
 		{
 			"apiVersion": "2015-05-01-preview",
 			"type": "Microsoft.Compute/virtualMachines",
-			"name": "[parameters('TeamCityServerVMName')]",
+			"name": "[variables('TeamCityServerVMName')]",
 			"location": "[parameters('location')]",
 			"dependsOn": [
 				"[resourceId('Microsoft.Storage/storageAccounts',parameters('newStorageAccountName'))]",
@@ -286,7 +317,7 @@
 					"vmSize": "[parameters('TeamCityServerVMSize')]"
 				},
 				"osProfile": {
-					"computername": "[parameters('TeamCityServerVMName')]",
+					"computername": "[variables('TeamCityServerVMName')]",
 					"adminUsername": "[parameters('adminUsername')]",
 					"adminPassword": "[parameters('adminPassword')]"
 				},
@@ -310,7 +341,7 @@
 							"vhd": {
 								"uri": "[concat('http://',parameters('newStorageAccountName'),'.blob.core.windows.net/vhds/', variables('TeamCityServerDisk'),'-1.vhd')]"
 							},
-							"name": "[concat(parameters('TeamCityServerVMName'),'-data-disk1')]",
+							"name": "[concat(variables('TeamCityServerVMName'),'-data-disk1')]",
 							"caching": "None",
 							"createOption": "empty",
 							"diskSizeGB": "[variables('TeamCityServerDiskSize')]",
@@ -326,7 +357,84 @@
 					]
 				}
 			}			
-		},				
+		},
+		{
+	        "apiVersion": "2015-05-01-preview",
+	        "type": "Microsoft.Network/networkInterfaces",
+	        "name": "[variables('TeamCityAgentNicName')]",
+	        "location": "[parameters('location')]",
+	        "dependsOn": [						            			
+				"Microsoft.Resources/deployments/VNet"
+	        ],
+	        "properties": {
+	            "ipConfigurations": [
+	                {
+	                    "name": "ipconfig1",
+	                    "properties": {
+	                        "privateIPAllocationMethod": "Dynamic",	                        
+	                        "subnet": {
+	                            "id": "[variables('subnetRangeRef')]"
+	                        }
+	                    }
+	                }
+	            ]
+	        }
+	    },
+		{
+			"apiVersion": "2015-05-01-preview",
+			"type": "Microsoft.Compute/virtualMachines",
+			"name": "[variables('TeamCityAgentVMName')]",
+			"location": "[parameters('location')]",
+			"dependsOn": [
+				"[resourceId('Microsoft.Storage/storageAccounts',parameters('newStorageAccountName'))]",
+				"[resourceId('Microsoft.Network/networkInterfaces',variables('TeamCityAgentNicName'))]"
+			],
+			"properties": {
+				"hardwareProfile": {
+					"vmSize": "[variables('TeamCityAgentVMSize')]"
+				},
+				"osProfile": {
+					"computername": "[variables('TeamCityAgentVMName')]",
+					"adminUsername": "[parameters('adminUsername')]",
+					"adminPassword": "[parameters('adminPassword')]"
+				},
+				"storageProfile": {
+					"imageReference": {
+						"publisher": "[parameters('imagePublisher')]",
+						"offer": "[parameters('imageOffer')]",
+						"sku": "[parameters('imageSKU')]",
+						"version": "latest"
+					},
+					"osDisk": {
+						"name": "osdisk",
+						"vhd": {
+							"uri": "[concat('http://',parameters('newStorageAccountName'),'.blob.core.windows.net/vhds/','tca1osdisk.vhd')]"
+						},
+						"caching": "ReadWrite",
+						"createOption": "FromImage"
+					},
+					"dataDisks": [
+						{
+							"vhd": {
+								"uri": "[concat('http://',parameters('newStorageAccountName'),'.blob.core.windows.net/vhds/', variables('TeamCityAgentDisk'),'-1.vhd')]"
+							},
+							"name": "[concat(variables('TeamCityAgentVMName'),'-data-disk1')]",
+							"caching": "None",
+							"createOption": "empty",
+							"diskSizeGB": "[variables('TeamCityAgentDiskSize')]",
+							"lun": 0
+						}
+					]
+				},
+				"networkProfile": {
+					"networkInterfaces": [
+						{
+							"id": "[resourceId('Microsoft.Network/networkInterfaces',variables('TeamCityAgentNicName'))]"
+						}
+					]
+				}
+			}			
+		},										
 		{
 	      "name": "[parameters('DatabaseServerName')]",
 	      "type": "Microsoft.Sql/servers",

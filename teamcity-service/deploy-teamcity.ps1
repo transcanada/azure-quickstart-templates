@@ -1,6 +1,6 @@
 
-$testNum=5
-$testName="tctest$($testNum)"
+$instanceNum=1
+$testName="tmcty$($instanceNum)"
 	
 $location = 'West US'
 New-AzureResourceGroup -Name $testName -DeploymentName "$($testName)deploy" -Location $location `
