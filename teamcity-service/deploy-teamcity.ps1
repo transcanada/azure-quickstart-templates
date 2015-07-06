@@ -1,14 +1,15 @@
 
-$instanceNum=1
-$testName="tmcty$($instanceNum)"
+$instanceNum=5
+$teamCityServiceName="tmcty$($instanceNum)"
 	
 $location = 'West US'
-New-AzureResourceGroup -Name $testName -DeploymentName "$($testName)deploy" -Location $location `
+New-AzureResourceGroup -Name $teamCityServiceName -DeploymentName "$($teamCityServiceName)deploy" -Location $location `
 	-TemplateFile azuredeploy.json `
-	-newStorageAccountName "$($testName)storage" `
-	-virtualNetworkName "$($testName)vnt" `
+	-newStorageAccountName "$($teamCityServiceName)storage" `
+	-virtualNetworkName "$($teamCityServiceName)vnt" `
 	-locationFromTemplate $location `
-	-DatabaseServerName "$testName" `
-	-DatabaseName "$($testName)DB" `
-	-TeamCityDNSNameForPublicIP "$($testName)-tcs" `
+	-DatabaseServerName "$teamCityServiceName" `
+	-DatabaseName "$($teamCityServiceName)DB" `
+	-TeamCityDNSNameForPublicIP $teamCityServiceName `
+	-TeamCityAgentDNSNameForPublicIP "$($teamCityServiceName)-agent1" `
 	-Verbose
