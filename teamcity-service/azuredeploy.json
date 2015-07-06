@@ -630,8 +630,8 @@
 		                "type": "DSC",
 		                "typeHandlerVersion": "1.9",
 		                "settings": {
-		                    "ModulesUrl": "[concat(parameters('AssetLocation'),'/InitializeServer.ps1.zip')]",
-		                    "ConfigurationFunction": "InitializeServer.ps1\\InitializeServer",
+		                    "ModulesUrl": "[concat(parameters('AssetLocation'),'/Configuration.zip')]",
+		                    "ConfigurationFunction": "Configuration.ps1\\DomainJoin",
 		                    "Properties": {
 		                        "DomainName": "[parameters('domainName')]",
 		                        "AdminCreds": {
