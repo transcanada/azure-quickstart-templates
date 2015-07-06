@@ -252,7 +252,7 @@
 	        "name": "[variables('TeamCityNicName')]",
 	        "location": "[parameters('location')]",
 	        "dependsOn": [
-				"[resourceId('Microsoft.Network/publicIPAddresses',parameters('TeamCityPublicIPAddressName'))]",				            			
+				"[resourceId('Microsoft.Network/publicIPAddresses',variables('TeamCityPublicIPAddressName'))]",				            			
 				"Microsoft.Resources/deployments/VNet"
 	        ],
 	        "properties": {
