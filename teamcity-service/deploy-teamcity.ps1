@@ -10,6 +10,6 @@ New-AzureResourceGroup -Name $teamCityServiceName -DeploymentName "$($teamCitySe
 	-locationFromTemplate $location `
 	-DatabaseServerName "$teamCityServiceName" `
 	-DatabaseName "$($teamCityServiceName)DB" `
-	-TeamCityDNSNameForPublicIP $teamCityServiceName `
-	-TeamCityAgentDNSNameForPublicIP "$($teamCityServiceName)-agent1" `
+	-TeamCityDNSNameForPublicIP "transcanada-teamcity-$instanceNum" `
+	-TeamCityAgentDNSNameForPublicIP "transcanada-teamcity-$($instanceNum)-agent1" `
 	-Verbose
