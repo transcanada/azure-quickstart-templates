@@ -1,0 +1,21 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "newStorageAccount": {
+      "value": "#####"
+    },
+    "publicDnsName": {
+      "value": "#####"
+    },
+    "adminUsername": {
+      "value": "ChangeAdminName"
+    },
+    "adminPassword": {
+      "value": "ChangeThisPassword2,zN0*pECq;!YxRu"
+    },
+    "domainName": {
+      "value": "mydomain.local"
+    }
+  }
+}
